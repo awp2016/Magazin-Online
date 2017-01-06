@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% if messages %}
+        {{message}}
+    {% endif %}
+    <h4> {{product.product_name}}</h4>
+    <hr>
+    <p>{{product.description}}</p>
+    <hr>
+    <p>Price: {{product.price | floatformat}} (Ron/{{product.unit}})</p>
+    <small>There are still {{product.stock_number | floatformat}} {{product.unit }} units available</small>
+    <br>
+    <form method="post">
+        <div>
+          {% csrf_token %}
+          {{ form}}
+          <input type="submit" value="Save"/>
+        </div>
+    </form>
+
+</body>
+</html>

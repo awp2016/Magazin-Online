@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Online Shop</title>
+    <link rel="stylesheet" type="text/css" href="stile/css/main.css">
+  </head>
+
+  <body>
+
+    <form method="post">
+        <div>
+          <h3>Add new Product</h3>
+          {% csrf_token %}
+          {{ form}}
+          <input type="submit" value="Save"/>
+        </div>
+    </form>
+          <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Product Name</th>
+                    <th>Short Description</th>
+                    <th>Price</th>
+                    <th>Available</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in product_list %}
+                        <tr>
+                            <td><a href="{% url 'buy_product' product.pk %}">{{ product.product_name}}</a></td>
+                            <td> {{product.category}}</td>
+                            <td>{{product.description | slice:":20"}}...</td>
+                            <td>{{product.price | floatformat }} (Ron/{{product.unit}})</td>
+                            <td>{{product.stock_number | floatformat}} {{product.unit}} </td>
+                            <td><a href="{% url 'delete_product' product.pk %}"><input type="button" value="Delete"/></a></td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+  </body>
+<html>
+
