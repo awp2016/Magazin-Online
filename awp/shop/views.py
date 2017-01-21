@@ -43,6 +43,7 @@ class BuyProduct(View):
   form_class = forms.Selector
   model = models.Product
 
+
   def get(self, request,pk):
     product = models.Product.objects.get(pk=pk)
     context = {
@@ -56,11 +57,49 @@ class BuyProduct(View):
     if form.is_valid():
       quantity =form.cleaned_data['quantity']
       product = models.Product.objects.filter(pk=pk)
-      product.update(stock_number=F('stock_number') - quantity)
-      unit =product.values_list("unit", flat=True)[0] #extragem unitatea de masura a produsului
 
+      unit =product.values_list("unit", flat=True)[0] #extragem unitatea de masura a produsului
+      currentQuantity = product.values_list("stock_number", flat=True)[0]
+      if currentQuantity >= quantity:
+        product.update(stock_number=F('stock_number') - quantity)
 
     return redirect('index')
+
+class UpdateProduct(View):
+  template_name = 'shop/update_product.html'
+  form_class = forms.ProductForm
+  model = models.Product
+
+
+  def get(self, request,pk):
+    product = models.Product.objects.filter(pk=pk)
+    formular = forms.ProductForm()
+    formular.fields["category"].initial = product.values_list("category", flat=True)[0]
+    formular.fields["product_name"].initial = product.values_list("product_name", flat=True)[0]
+    formular.fields["description"].initial = product.values_list("description", flat=True)[0]
+    formular.fields["price"].initial = product.values_list("price", flat=True)[0]
+    formular.fields["stock_number"].initial = product.values_list("stock_number", flat=True)[0]
+    formular.fields["unit"].initial = product.values_list("unit", flat=True)[0]
+
+    context = {
+        'form': formular,
+        'product': product
+    }
+    return render(request, 'shop/update_product.html', context)
+
+  def post(self, request,pk):
+    form = self.form_class(request.POST)
+    if form.is_valid():
+      product = models.Product.objects.filter(pk=pk)
+      product.update(category=form.cleaned_data['category'])
+      product.update(product_name=form.cleaned_data['product_name'])
+      product.update(description=form.cleaned_data['description'])
+      product.update(price=form.cleaned_data['price'])
+      product.update(stock_number=form.cleaned_data['stock_number'])
+      product.update(unit=form.cleaned_data['unit'])
+
+    return redirect('index')
+
 
 def deleteProduct(request,primary_key):
   if request.method == 'GET':
@@ -92,3 +131,4 @@ def logout_view(request):
     if request.method == 'GET':
         logout(request)
         return redirect('index')
+

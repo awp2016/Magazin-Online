@@ -1,12 +1,14 @@
+{% load static %}
 <html>
   <head>
     <title>Online Shop</title>
-    <link rel="stylesheet" type="text/css" href="stile/css/main.css">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
   </head>
 
   <body>
     <div class="user">
-    <span>Logged in as:<span>
+    <span>Logged in as:</span>
     {% if user.profile %}
       <a href="{% url 'user_profile' user.profile.pk %}">{{ user.username }}</a>
     {% else %}
@@ -30,17 +32,43 @@
                     <th>Short Description</th>
                     <th>Price</th>
                     <th>Available</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for product in product_list %}
                         <tr>
-                            <td><a href="{% url 'buy_product' product.pk %}">{{ product.product_name}}</a></td>
+                            <td>
+                                {% if product.stock_number != 0 %}
+                                    <a href="{% url 'buy_product' product.pk %}">{{ product.product_name}}</a>
+                                {% else %}
+                                    {{ product.product_name}}
+                                {% endif %}
+
+                            </td>
                             <td> {{product.category}}</td>
                             <td>{{product.description | slice:":20"}}...</td>
-                            <td>{{product.price | floatformat }} (Ron/{{product.unit}})</td>
-                            <td>{{product.stock_number | floatformat}} {{product.unit}} </td>
+                            <td>{{product.price | floatformat }}
+                                {% if product.unit == "Units" %}
+                                    (Ron/Unit)
+                                {% else %}
+                                    (Ron/{{product.unit}})
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.stock_number == 1 and product.unit == "Units" %}
+                                    {{product.stock_number | floatformat}} Unit
+                                {% elif product.stock_number == 0 %}
+                                    Product not available
+                                {% else %}
+                                    {{product.stock_number | floatformat}} {{product.unit}}
+                                {% endif %}
+
+                            </td>
                             <td><a href="{% url 'delete_product' product.pk %}"><input type="button" value="Delete"/></a></td>
+                            <td><a href="{% url 'update_product' product.pk %}"><input type="button" value="Update"/></a></td>
+
                         </tr>
                 {% endfor %}
             </tbody>

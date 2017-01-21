@@ -6,10 +6,12 @@ from django.db import models
 
 from django.contrib.auth.models import User
 from django.db import models
+import datetime
 from django.urls import reverse
 
 
 class Product(models.Model):
+
   category = models.CharField(max_length=200)
   product_name = models.CharField(max_length=200 )
   description = models.CharField(max_length=200)
@@ -33,5 +35,3 @@ class MyShoppingCart(models.Model):
 class ShoppingCartItem(models.Model):
   cart= models.ForeignKey(MyShoppingCart)
   product= models.ForeignKey(Product)
-
-  

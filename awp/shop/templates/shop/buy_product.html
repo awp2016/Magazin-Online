@@ -5,15 +5,19 @@
     <title>Title</title>
 </head>
 <body>
-    {% if messages %}
-        {{message}}
-    {% endif %}
-    <h4> {{product.product_name}}</h4>
+    <p>{{product.product_name}}</p>
     <hr>
     <p>{{product.description}}</p>
     <hr>
     <p>Price: {{product.price | floatformat}} (Ron/{{product.unit}})</p>
-    <small>There are still {{product.stock_number | floatformat}} {{product.unit }} units available</small>
+    <small>There are still {{product.stock_number | floatformat}}
+              {% if product.stock_number == 1 and product.unit == "Units" %}
+                Unit
+              {% else %}
+                {{product.unit}}
+              {% endif %}
+              available
+    </small>
     <br>
     <form method="post">
         <div>
