@@ -13,3 +13,8 @@ class ProductForm(forms.Form):
 class Selector(forms.Form):
   #quantity = forms.ChoiceField(choices=[(x, x) for x in range(1, 100)])
   quantity= forms.IntegerField(label="Buy quantity",min_value=0)
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label="Username")
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
+

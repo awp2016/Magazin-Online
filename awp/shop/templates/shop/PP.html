@@ -1,0 +1,17 @@
+{% extends 'shop/product.html' %}
+
+{% block userul %}
+
+<div class="user">
+    {% if user.profile %}
+      <span>Logged in as:<span>
+      <a href="{% url 'user_profile' user.profile.pk %}">{{ user.username }}</a>
+    | <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <p>Anonymus<p>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}

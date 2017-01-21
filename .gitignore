@@ -1,3 +1,12 @@
+.idea
+venv
+awp/db.sqlite3
+awp/env
+*.pyc
+
+# Created by https://www.gitignore.io/api/python
+
+### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -20,6 +29,7 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -66,7 +76,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# IPython Notebook
+# Jupyter Notebook
 .ipynb_checkpoints
 
 # pyenv
@@ -79,12 +89,14 @@ celerybeat-schedule
 .env
 
 # virtualenv
+.venv/
 venv/
 ENV/
-sandbox/ 
 
 # Spyder project settings
 .spyderproject
 
 # Rope project settings
 .ropeproject
+
+# End of https://www.gitignore.io/api/python
