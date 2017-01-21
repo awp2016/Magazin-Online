@@ -1,19 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
-from django.urls import reverse
-from django.views.generic.edit import DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.list import View
 from django.db.models import F
-from django.contrib import messages
 
 from . import models
 from . import forms
 
 
-class ProductsListView(ListView):
+class ProductsListView(LoginRequiredMixin, ListView):
   model = models.Product
   form_class = forms.ProductForm
   template_name = 'shop/product.html'
@@ -37,6 +33,12 @@ class ProductsListView(ListView):
                           unit= form.cleaned_data['unit'])
       status.save()
       return redirect('index')
+    else:
+      context = {
+        'form': form,
+        'product_list':self.get_queryset(),
+      }
+      return render(request, self.template_name, context)
 
 class BuyProduct(View):
   template_name = 'shop/buy_product.html'
@@ -54,16 +56,18 @@ class BuyProduct(View):
 
   def post(self, request,pk):
     form = self.form_class(request.POST)
+    product = models.Product.objects.filter(pk=pk)
     if form.is_valid():
       quantity =form.cleaned_data['quantity']
-      product = models.Product.objects.filter(pk=pk)
-
-      unit =product.values_list("unit", flat=True)[0] #extragem unitatea de masura a produsului
       currentQuantity = product.values_list("stock_number", flat=True)[0]
       if currentQuantity >= quantity:
-        product.update(stock_number=F('stock_number') - quantity)
+        if product.values_list("unit", flat=True)[0] == 'Units' and quantity % 10 == 0:
+         product.update(stock_number=F('stock_number') - quantity)
+        elif product.values_list("unit", flat=True)[0] != 'Units':
+          product.update(stock_number=F('stock_number') - quantity)
 
-    return redirect('index')
+      return redirect('index')
+
 
 class UpdateProduct(View):
   template_name = 'shop/update_product.html'

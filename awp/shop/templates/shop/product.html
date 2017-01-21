@@ -1,4 +1,5 @@
 {% load static %}
+
 <html>
   <head>
     <title>Online Shop</title>
@@ -16,14 +17,19 @@
     {% endif %}
     | <a href="{% url 'logout' %}">Logout</a>
     </div>
-    <form method="post">
-        <div>
-          <h3>Add new Product</h3>
-          {% csrf_token %}
-          {{ form}}
-          <input type="submit" value="Save"/>
-        </div>
-    </form>
+    {% for group in request.user.groups.all %}
+        {% if group.name == 'Administrator' %}
+        <form method="post">
+            <div>
+              <h3>Add new Product</h3>
+              {% csrf_token %}
+              {{ form}}
+              <input type="submit" value="Save"/>
+            </div>
+        </form>
+        {% endif %}
+    {% endfor %}
+
           <table>
             <thead>
                 <tr>
@@ -32,13 +38,18 @@
                     <th>Short Description</th>
                     <th>Price</th>
                     <th>Available</th>
-                    <th></th>
-                    <th></th>
+                    {% for group in request.user.groups.all %}
+                        {% if group.name == 'Administrator' %}
+                            <th></th>
+                            <th></th>
+                        {% endif %}
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for product in product_list %}
                         <tr>
+                            <td> {{product.category}}</td>
                             <td>
                                 {% if product.stock_number != 0 %}
                                     <a href="{% url 'buy_product' product.pk %}">{{ product.product_name}}</a>
@@ -47,7 +58,6 @@
                                 {% endif %}
 
                             </td>
-                            <td> {{product.category}}</td>
                             <td>{{product.description | slice:":20"}}...</td>
                             <td>{{product.price | floatformat }}
                                 {% if product.unit == "Units" %}
@@ -66,13 +76,19 @@
                                 {% endif %}
 
                             </td>
-                            <td><a href="{% url 'delete_product' product.pk %}"><input type="button" value="Delete"/></a></td>
-                            <td><a href="{% url 'update_product' product.pk %}"><input type="button" value="Update"/></a></td>
+                            {% for group in request.user.groups.all %}
+                                {% if group.name == 'Administrator' %}
+                                    <td><a href="{% url 'delete_product' product.pk %}"><input type="button" value="Delete"/></a></td>
+                                    <td><a href="{% url 'update_product' product.pk %}"><input type="button" value="Update"/></a></td>
+                                {% endif %}
+                            {% endfor %}
+
 
                         </tr>
                 {% endfor %}
             </tbody>
         </table>
+
   </body>
 <html>
 
