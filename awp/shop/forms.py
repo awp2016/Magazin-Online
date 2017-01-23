@@ -30,9 +30,3 @@ class Selector(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username")
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
-
-class ReviewForm(forms.Form):
-  product_name = forms.CharField(label = "Category", widget = forms.Textarea)
-  client_name = forms.CharField(label = "Name", widget = forms.Textarea)
-  comment = forms.CharField(label = "Description", widget=forms.Textarea)
-  date = forms.DateField(initial = datetime.date.today)

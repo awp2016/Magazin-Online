@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Cart</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+</head>
+<body>
+<table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Product Name</th>
+                    <th>Short Description</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for it in items %}
+                        <tr>
+                            <td> {{it.product.category}}</td>
+                            <td>{{ it.product.product_name}}</td>
+                            <td>{{it.product.description}}</td>
+                            <td>{{it.product.price | floatformat }}
+                                {% if it.product.unit == "Units" %}
+                                    (Ron/Unit)
+                                {% else %}
+                                    (Ron/{{it.product.unit}})
+                                {% endif %}
+                            </td>
+                            <td>{{it.quantity}}</td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</body>
+<a style="text-decoration:none;" href="{% url 'index' %}"><input type="button" value="Checkout" /></a>
+</html>

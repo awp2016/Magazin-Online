@@ -8,6 +8,26 @@ from django.db.models import F
 from . import models
 from . import forms
 
+def create_client_cart(user):
+  try:
+    client = models.Client.objects.get(user=user)
+  except models.Client.DoesNotExist:
+    client = models.Client(user=user)
+    client.save()
+  try:
+    cart = models.MyShoppingCart.objects.get(client=client)
+  except models.MyShoppingCart.DoesNotExist:
+    cart =models.MyShoppingCart(client=client)
+    cart.save()
+
+def get_cart(user):
+  client = models.Client.objects.get(user=user)
+  return models.MyShoppingCart.objects.get(client=client)
+
+def add_item_to_cart(user,product,quantity):
+    cartItem=models.ShoppingCartItem(cart=get_cart(user),product=product,quantity=quantity)
+    cartItem.save()
+
 
 class ProductsListView(LoginRequiredMixin, ListView):
   model = models.Product
@@ -45,7 +65,6 @@ class BuyProduct(View):
   form_class = forms.Selector
   model = models.Product
 
-
   def get(self, request,pk):
     product = models.Product.objects.get(pk=pk)
     context = {
@@ -60,11 +79,14 @@ class BuyProduct(View):
     if form.is_valid():
       quantity =form.cleaned_data['quantity']
       currentQuantity = product.values_list("stock_number", flat=True)[0]
+      unitate = product.values_list("unit", flat=True)[0]
       if currentQuantity >= quantity:
-        if product.values_list("unit", flat=True)[0] == 'Units' and quantity % 10 == 0:
+        if unitate == 'Units' and quantity.is_integer():
          product.update(stock_number=F('stock_number') - quantity)
+         add_item_to_cart(request.user,product.first(),quantity)
         elif product.values_list("unit", flat=True)[0] != 'Units':
           product.update(stock_number=F('stock_number') - quantity)
+          add_item_to_cart(request.user, product.first(), quantity)
 
       return redirect('index')
 
@@ -123,6 +145,7 @@ def login_view(request):
             user = authenticate(username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
             if user:
+                create_client_cart(user)
                 login(request=request,
                       user=user)
                 return redirect('index')
@@ -135,4 +158,14 @@ def logout_view(request):
     if request.method == 'GET':
         logout(request)
         return redirect('index')
+
+
+def display_cart_items(request):
+  cart = get_cart(request.user)
+  items = models.ShoppingCartItem.objects.filter(cart=cart)
+  context={"items":items}
+  return render(request, 'shop/cart.html', context)
+
+
+
 

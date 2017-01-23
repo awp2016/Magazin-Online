@@ -14,8 +14,11 @@
       <a href="{% url 'user_profile' user.profile.pk %}">{{ user.username }}</a>
     {% else %}
       {{ user.username }}
+      <a style="text-decoration:none;" href="{% url 'my_cart' %}"><input type="button" value="My SHopping Cart" /></a>
     {% endif %}
     | <a href="{% url 'logout' %}">Logout</a>
+
+
     </div>
     {% for group in request.user.groups.all %}
         {% if group.name == 'Administrator' %}

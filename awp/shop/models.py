@@ -27,7 +27,7 @@ class Client(models.Model):
     birthday = models.DateField(null=True)
     address = models.CharField(max_length=150)
     avatar = models.ImageField(null=True, upload_to='images')
-    user = models.OneToOneField(User, primary_key=True, related_name='profile')
+    user = models.OneToOneField(User, primary_key=True, related_name='client')
 
 class MyShoppingCart(models.Model):
   client= models.OneToOneField(Client , primary_key=True, related_name='clients_cart')
@@ -35,3 +35,4 @@ class MyShoppingCart(models.Model):
 class ShoppingCartItem(models.Model):
   cart= models.ForeignKey(MyShoppingCart)
   product= models.ForeignKey(Product)
+  quantity= models.FloatField(null=True)
